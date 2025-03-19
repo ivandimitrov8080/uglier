@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 
 const prettier = require("prettier");
+const path = require("path");
 const fs = require("fs");
 
-console.log(process.argv)
+const [, , relative] = process.argv;
+absolute = path.resolve(relative)
+console.log(absolute)
+const source = fs.readFileSync(absolute, "utf8");
 
-const [, filepath] = process.argv;
-const source = fs.readFileSync(filepath, "utf8");
-
-prettier.resolveConfig(filepath).then(options => {
+prettier.resolveConfig(absolute).then(options => {
   options = options || {};
   options.plugins = [
     require("@prettier/plugin-xml"),
   ];
 
-  const formatted = prettier.format(source, { filepath, ...options });
-  fs.writeFileSync(filepath, formatted, "utf8");
+  const formatted = prettier.format(source, { filepath: absolute, ...options });
+  fs.writeFileSync(absolute, formatted, "utf8");
 });
 
