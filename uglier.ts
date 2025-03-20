@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { resolveConfig, format } from "prettier";
 import path, { resolve } from "path";
 import { readFileSync, writeFileSync } from "fs";
