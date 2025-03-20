@@ -12,9 +12,13 @@
   "dependencies": {
     "@prettier/plugin-xml": "^3.4.1",
     "bun": "^1.2.5",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "prettier-plugin-java": "^2.6.7",
+    "prettier-plugin-properties": "^0.3.0",
+    "prettier-plugin-sh": "^0.15.0"
   },
   "devDependencies": {
+    "@types/bun": "^1.2.5",
     "@types/node": "^22.13.10",
     "ncc": "latest"
   }
