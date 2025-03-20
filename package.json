@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@prettier/plugin-xml": "^3.4.1",
+    "bun": "^1.2.5",
     "prettier": "^3.5.3"
   },
   "devDependencies": {
