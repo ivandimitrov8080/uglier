@@ -1,17 +1,19 @@
 import path, { resolve } from "path";
-import { formatFileSync, formatTrackedFilesSync } from "./util";
-
-const preCommit = async () => {};
+import {
+  formatCachedFilesSync,
+  formatFileSync,
+  formatTrackedFilesSync,
+} from "./util";
 
 async function main(argv: string[]) {
   const [name, filename] = argv;
   switch (name) {
     case "uglier":
-      return filename === "git"
+      return filename === "all"
         ? formatTrackedFilesSync()
         : formatFileSync(resolve(filename));
     case "pre-commit":
-      return preCommit();
+      return formatCachedFilesSync();
   }
 }
 
