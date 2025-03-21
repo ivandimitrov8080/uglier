@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from "fs";
 import prettierXml from "@prettier/plugin-xml";
 import prettierJava from "prettier-plugin-java";
 import prettierProperties from "prettier-plugin-properties";
-import { $ } from "bun";
+import { $, file } from "bun";
 import { resolve } from "path";
 
 const supportedExtensions = [
@@ -16,6 +16,11 @@ const supportedExtensions = [
   "env",
   "json",
 ];
+
+const options = {
+  ...readFileSync("./options.json"),
+  plugins: [prettierXml, prettierJava, prettierProperties],
+};
 
 const formatFilesSync = (files: string[]) => {
   Promise.all(files.map((f) => formatFile(resolve(f)))).catch((err) =>
@@ -52,15 +57,14 @@ export const formatCachedFilesSync = () => {
 export const formatFile = async (filepath: string) => {
   const source = readFileSync(filepath, "utf8");
 
-  const options = (await resolveConfig(filepath)) || {};
-  const formatted = await format(source, {
-    ...options,
-    plugins: [prettierXml, prettierJava, prettierProperties],
-    filepath,
-  });
+  const formatted = await format(source, { ...options, filepath });
 
   writeFileSync(filepath, formatted, "utf8");
 };
 
 export const formatFileSync = (filepath: string) =>
   formatFile(filepath).catch((e) => console.log(e));
+
+export const generateOptionsForFile = (filepath: string) => {
+  resolveConfig(resolve(filepath)).then(cfg => writeFileSync("./options.json", JSON.stringify((cfg ?? {})), { flag: "w" }))
+}

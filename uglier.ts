@@ -1,19 +1,34 @@
-import path, { resolve } from "path";
+import path from "path";
 import {
   formatCachedFilesSync,
   formatFileSync,
   formatTrackedFilesSync,
+  generateOptionsForFile,
 } from "./util";
 
+const uglier = (argv: string[]) => {
+  const [, cmd] = argv
+  switch (cmd) {
+    case "gen":
+      return generateOptionsForFile(argv[2])
+    case "all":
+      return formatTrackedFilesSync()
+    default:
+      return formatFileSync(cmd)
+  }
+}
+
+const preCommit = () => {
+  return formatCachedFilesSync();
+}
+
 async function main(argv: string[]) {
-  const [name, filename] = argv;
+  const [name] = argv;
   switch (name) {
     case "uglier":
-      return filename === "all"
-        ? formatTrackedFilesSync()
-        : formatFileSync(resolve(filename));
+      return uglier(argv)
     case "pre-commit":
-      return formatCachedFilesSync();
+      return preCommit()
   }
 }
 
