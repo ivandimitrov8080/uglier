@@ -18,7 +18,7 @@ const supportedExtensions = [
 ];
 
 const options = {
-  ...readFileSync("./options.json"),
+  ...JSON.parse(readFileSync("./options.json", "utf8")),
   plugins: [prettierXml, prettierJava, prettierProperties],
 };
 
@@ -66,5 +66,7 @@ export const formatFileSync = (filepath: string) =>
   formatFile(filepath).catch((e) => console.log(e));
 
 export const generateOptionsForFile = (filepath: string) => {
-  resolveConfig(resolve(filepath)).then(cfg => writeFileSync("./options.json", JSON.stringify((cfg ?? {})), { flag: "w" }))
-}
+  resolveConfig(resolve(filepath)).then((cfg) =>
+    writeFileSync("./options.json", JSON.stringify(cfg ?? {}), { flag: "w" }),
+  );
+};

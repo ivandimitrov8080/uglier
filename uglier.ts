@@ -7,28 +7,28 @@ import {
 } from "./util";
 
 const uglier = (argv: string[]) => {
-  const [, cmd] = argv
+  const [, cmd] = argv;
   switch (cmd) {
     case "gen":
-      return generateOptionsForFile(argv[2])
+      return generateOptionsForFile(argv[2]);
     case "all":
-      return formatTrackedFilesSync()
+      return formatTrackedFilesSync();
     default:
-      return formatFileSync(cmd)
+      return formatFileSync(cmd);
   }
-}
+};
 
 const preCommit = () => {
   return formatCachedFilesSync();
-}
+};
 
 async function main(argv: string[]) {
   const [name] = argv;
   switch (name) {
     case "uglier":
-      return uglier(argv)
+      return uglier(argv);
     case "pre-commit":
-      return preCommit()
+      return preCommit();
   }
 }
 
