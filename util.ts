@@ -3,8 +3,9 @@ import { readFileSync, writeFileSync } from "fs";
 import prettierXml from "@prettier/plugin-xml";
 import prettierJava from "prettier-plugin-java";
 import prettierProperties from "prettier-plugin-properties";
-import { $, file } from "bun";
+import { $ } from "bun";
 import { resolve } from "path";
+import opts from "./options.json";
 
 const supportedExtensions = [
   "ts",
@@ -18,7 +19,7 @@ const supportedExtensions = [
 ];
 
 const options = {
-  ...JSON.parse(readFileSync("./options.json", "utf8")),
+  ...opts,
   plugins: [prettierXml, prettierJava, prettierProperties],
 };
 
