@@ -1,40 +1,35 @@
 import path from "path";
 import {
-  formatCachedFilesSync,
-  formatFileSync,
-  formatTrackedFilesSync,
+  formatCachedFiles,
+  formatFiles,
+  formatTrackedFiles,
   generateOptionsForFile,
 } from "./util";
 
-const uglier = (argv: string[]) => {
+const uglier = async (argv: string[]) => {
   const [, cmd] = argv;
   switch (cmd) {
     case "gen":
       return generateOptionsForFile(argv[2]);
     case "all":
-      return formatTrackedFilesSync();
+      return await formatTrackedFiles();
     default:
-      return formatFileSync(cmd);
+      return await formatFiles(argv.slice(1));
   }
 };
 
-const preCommit = () => {
-  return formatCachedFilesSync();
+const preCommit = async () => {
+  return await formatCachedFiles();
 };
 
 async function main(argv: string[]) {
   const [name] = argv;
   switch (name) {
     case "uglier":
-      return uglier(argv);
+      return await uglier(argv);
     case "pre-commit":
-      return preCommit();
+      return await preCommit();
   }
 }
 
-main([path.basename(process.execPath), ...process.argv.slice(2)]).catch(
-  (error) => {
-    console.error("Formatting failed:", error);
-    process.exit(1);
-  },
-);
+main([path.basename(process.execPath), ...process.argv.slice(2)]);

@@ -1,5 +1,5 @@
 import { resolveConfig, format } from "prettier";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFile, writeFileSync } from "fs";
 import prettierXml from "@prettier/plugin-xml";
 import prettierJava from "prettier-plugin-java";
 import prettierProperties from "prettier-plugin-properties";
@@ -23,17 +23,11 @@ const options = {
   plugins: [prettierXml, prettierJava, prettierProperties],
 };
 
-const formatFilesSync = (files: string[]) => {
-  Promise.all(files.map((f) => formatFile(resolve(f)))).catch((err) =>
-    console.log(err),
-  );
-};
-
-export const getSupportedFiles = (arr: string[]): string[] => {
+const getSupportedFiles = (arr: string[]): string[] => {
   return arr.filter((f) => supportedExtensions.some((e) => f.endsWith(e)));
 };
 
-export const getCachedFiles = async (): Promise<string[]> => {
+const getCachedFiles = async (): Promise<string[]> => {
   return getSupportedFiles(
     (await $`git diff --cached --name-only`.text())
       .split("\n")
@@ -41,30 +35,34 @@ export const getCachedFiles = async (): Promise<string[]> => {
   );
 };
 
-export const getTrackedFiles = async (): Promise<string[]> => {
+const getTrackedFiles = async (): Promise<string[]> => {
   return getSupportedFiles(
     (await $`git ls-files`.text()).split("\n").filter((f) => f.trim() !== ""),
   );
 };
 
-export const formatTrackedFilesSync = () => {
-  getTrackedFiles().then((cf) => formatFilesSync(cf));
-};
-
-export const formatCachedFilesSync = () => {
-  getCachedFiles().then((cf) => formatFilesSync(cf));
-};
-
-export const formatFile = async (filepath: string) => {
+const formatFile = async (filepath: string) => {
   const source = readFileSync(filepath, "utf8");
-
-  const formatted = await format(source, { ...options, filepath });
-
-  writeFileSync(filepath, formatted, "utf8");
+  return await format(source, { ...options, filepath });
 };
 
-export const formatFileSync = (filepath: string) =>
-  formatFile(filepath).catch((e) => console.log(e));
+export const formatFiles = async (files: string[]) => {
+  return Promise.all(
+    files.map((f) =>
+      formatFile(resolve(f)).then((formatted) =>
+        writeFileSync(f, formatted, "utf8"),
+      ),
+    ),
+  );
+};
+
+export const formatTrackedFiles = async () => {
+  return getTrackedFiles().then((cf) => formatFiles(cf));
+};
+
+export const formatCachedFiles = async () => {
+  return getCachedFiles().then((cf) => formatFiles(cf));
+};
 
 export const generateOptionsForFile = (filepath: string) => {
   resolveConfig(resolve(filepath)).then((cfg) =>
