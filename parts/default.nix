@@ -34,40 +34,7 @@
           };
         };
         packages = {
-          default = pkgs.mkYarnPackage rec {
-            name = "uglier";
-            version = "1.0.0";
-            src = ../.;
-            packageJSON = ../package.json;
-            yarnLock = ../yarn.lock;
-            yarnNix = ./yarn.nix;
-            nativeBuildInputs = with pkgs; [
-              bun
-            ];
-            phases = [
-              "unpackPhase"
-              "patchPhase"
-              "updateAutotoolsGnuConfigScriptsPhase"
-              "configurePhase"
-              "buildPhase"
-              "installPhase"
-            ];
-            buildPhase = ''
-              runHook preBuild
-              bun build deps/uglier/uglier.ts --compile --minify --sourcemap --outfile dist/uglier
-              runHook postBuild
-            '';
-            installPhase = ''
-              runHook preInstall
-              mkdir -p $out/bin
-              cp dist/${name} $out/bin/
-              ln $out/bin/${name} $out/bin/pre-commit
-              runHook postInstall
-            '';
-            meta = {
-              mainProgram = "uglier";
-            };
-          };
+          default = pkgs.callPackage ./package { };
         };
       };
     };
