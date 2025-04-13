@@ -43,7 +43,6 @@
             yarnNix = ./yarn.nix;
             nativeBuildInputs = with pkgs; [
               bun
-              fd
             ];
             phases = [
               "unpackPhase"
